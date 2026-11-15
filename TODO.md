@@ -1,28 +1,41 @@
-# 📋 Panduan Pengerjaan: TODO 1 s/d TODO 10 Langsung di Kode
+# 📚 Modul Mentoring Frontend: Slicing UI + Consume REST API
 
-Semua penanda tugas (`TODO`) telah disematkan langsung di dalam file kode sumber dengan penjelasan tujuan, instruksi, dan petunjuk langkah demi langkah.
+Template pembelajaran ini dirancang khusus untuk sesi **Mentoring Frontend**:
+* **Backend Live Server**: `https://api-mentor.bemfilkomub.cloud/api/v1/products`
+* **Swagger Documentation**: `https://api-mentor.bemfilkomub.cloud/docs`
+* **Konfigurasi Auth**: Disimpan di `.env` (`NEXT_PUBLIC_API_KEY`)
+
+Materi terbagi menjadi 2 pilar utama Frontend: **Design / Slicing** dan **Integrasi API**.
 
 ---
 
-### 🗺️ Peta Lokasi TODO di Dalam Kode:
+## 🎨 FASE 1: DESAIN & SLICING UI (TODO 1 s/d 3)
 
-| No. | File Path | Fokus Materi | Deskripsi Tugas |
+Melatih peserta dalam manipulasi visual, responsive layout, formatting data, dan conditional styling dengan Tailwind CSS:
+
+| No. | File Path | Aspek FE yang Dilatih | Deskripsi Tugas |
 |:---|:---|:---|:---|
-| **TODO 1** | [`src/types/product.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/types/product.ts) | **TypeScript Data Model** | Definisikan `Product` interface dan DTOs (`CreateProductInput`, `UpdateProductInput`, `PatchProductInput`). |
-| **TODO 2** | [`src/data/mockProducts.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/data/mockProducts.ts) | **Data Layer** | Siapkan initial dataset dan fungsi helper getter/setter store in-memory. |
-| **TODO 3** | [`src/components/ProductCard.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/components/ProductCard.tsx) | **UI Component (Card)** | Format harga ke Rupiah, tampilkan badge ketersediaan, serta tombol aksi PUT & Quick PATCH. |
-| **TODO 4** | [`src/components/ProductFormModal.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/components/ProductFormModal.tsx) | **Form Component (Modal)** | Validasi field wajib, susun payload DTO, dan hubungkan callback submit. |
-| **TODO 5** | [`src/app/api/products/route.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/api/products/route.ts) | **API Route (GET)** | Baca data, filter berdasarkan query (`search`, `category`, `status`), return JSON 200. |
-| **TODO 6** | [`src/app/api/products/route.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/api/products/route.ts) | **API Route (POST)** | Validasi body, buat ID unik & timestamp, simpan ke store, return status 201 Created. |
-| **TODO 7** | [`src/app/api/products/[id]/route.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/api/products/[id]/route.ts) | **API Route (PUT)** | Full replacement: cek keberadaan ID, validasi field utama, timpa seluruh data lama. |
-| **TODO 8** | [`src/app/api/products/[id]/route.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/api/products/[id]/route.ts) | **API Route (PATCH)** | Partial update: cari ID, lakukan merge hanya pada atribut yang dikirimkan. |
-| **TODO 9** | [`src/app/api/products/[id]/route.ts`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/api/products/[id]/route.ts) | **API Route (DELETE)** | Hapus produk berdasarkan ID dari array data, return status 200 OK. |
-| **TODO 10** | [`src/app/page.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/page.tsx) | **Frontend API Consumption** | Konsumsi API via `fetch`: <br>• **10-A**: GET list produk<br>• **10-B**: POST produk baru<br>• **10-C**: PUT perbarui produk<br>• **10-D**: PATCH toggle status & stok<br>• **10-E**: DELETE hapus produk |
+| **TODO 1.1** | [`src/components/ProductCard.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/components/ProductCard.tsx) | **Data Formatting** | Format angka harga menjadi format Rupiah (`Intl.NumberFormat`) agar tampil `Rp 25.000.000`. |
+| **TODO 1.2** | [`src/components/ProductCard.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/components/ProductCard.tsx) | **Conditional Styling** | Beri warna hijau (`bg-emerald-100 text-emerald-700`) jika stok > 0, atau merah (`bg-rose-100 text-rose-700`) jika stok habis. |
+| **TODO 1.3** | [`src/components/ProductCard.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/components/ProductCard.tsx) | **Interactive Visual State** | Terapkan visual disabled (`disabled:opacity-30 disabled:cursor-not-allowed`) pada tombol kurangi stok jika stok = 0. |
+| **TODO 2** | [`src/app/page.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/page.tsx) | **Skeleton Loading State** | Tampilkan skeleton shimmer kartu dengan `animate-pulse` saat request data sedang berjalan (`isLoading`). |
+| **TODO 3** | [`src/app/page.tsx`](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/src/app/page.tsx) | **Empty State UX** | Buat desain kotak bersih dan tombol ajakan saat server belum memiliki produk sama sekali. |
 
 ---
 
-### 💡 Cara Belajar dengan Template Ini:
-1. Buka file secara berurutan mulai dari `TODO 1` sampai `TODO 10`.
-2. Baca blok komentar `🎯 TODO [Nomor]` di bagian atas setiap file.
-3. Pelajari implementasi yang disediakan, atau coba modifikasi/tulis ulang fungsi-fungsinya untuk menguji pemahamanmu.
-4. Jalankan `npm run dev` dan buka `http://localhost:3000` untuk melihat perubahan secara langsung.
+## ⚡ FASE 2: KONSUMSI REST API (TODO 4 s/d 8)
+
+Melatih peserta menghubungkan UI yang sudah dibuat dengan server nyata menggunakan `fetch`, state management, dan async/await:
+
+| No. | Nama Fungsi di `src/app/page.tsx` | Method HTTP | Deskripsi Tugas |
+|:---|:---|:---|:---|
+| **TODO 4** | `loadProducts()` | `GET` | Ambil list produk dari server online dan simpan ke state React. |
+| **TODO 5** | `handleCreateProduct(formData)` | `POST` | Kirim data `{ name, price, stock }` ke server untuk membuat produk baru. |
+| **TODO 6** | `handleUpdateProduct(formData)` | `PUT` | Timpa data lama dengan data baru saat modal form edit disimpan. |
+| **TODO 7** | `handlePatchQuickStock(product, delta)` | `PATCH` | Kirim HANYA field `{ stock: newStock }` saat tombol `[-]` atau `[+]` di kartu ditekan. |
+| **TODO 8** | `handleDeleteProduct(id)` | `DELETE` | Hapus produk dari server database. |
+
+---
+
+### 🔑 Referensi & Kunci Jawaban
+Jika mentee atau mentor membutuhkan kunci jawaban untuk verifikasi kode, silakan buka file [KUNCI_JAWABAN.md](file:///d:/projects_vsssl/FEEEEEEEEEEE/belajar-next/KUNCI_JAWABAN.md).
