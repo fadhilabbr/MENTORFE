@@ -9,8 +9,7 @@
 // ============================================================================
 
 import { NextRequest, NextResponse } from "next/server";
-import { getStoredProducts, saveStoredProducts } from "@/data/mockProducts";
-import { CreateProductInput, Product } from "@/types/product";
+import { getStoredProducts } from "@/data/mockProducts";
 
 /**
  * ----------------------------------------------------------------------------
@@ -39,6 +38,11 @@ export async function GET(request: NextRequest) {
     // TODO 5.1: Filter berdasarkan kata kunci pencarian (search)
     if (search) {
       // products = products.filter(...)
+      products = products.filter(
+        (p) =>
+          p.title.toLowerCase().includes(search) ||
+          p.description.toLowerCase().includes(search)
+      );
     }
 
     // TODO 5.2: Filter berdasarkan kategori jika bukan "Semua"
@@ -82,11 +86,13 @@ export async function GET(request: NextRequest) {
  */
 export async function POST(request: NextRequest) {
   try {
+    const rawBody = await request.json().catch(() => null);
+
     // 👇 TULIS KODE IMPLEMENTASI TODO 6 KAMU DI SINI:
     // ------------------------------------------------------------------------
     // Contoh template langkah pengerjaan:
-    // const body: CreateProductInput = await request.json();
-    // if (!body.title || !body.price || !body.category) { ... return status 400 }
+    // const body: CreateProductInput = rawBody;
+    // if (!body?.title || !body?.price || !body?.category) { ... return status 400 }
     // const newProduct: Product = { ... }
     // saveStoredProducts([newProduct, ...getStoredProducts()])
     // return NextResponse.json({ success: true, data: newProduct }, { status: 201 })
@@ -96,7 +102,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: false,
-        message: "TODO 6 (POST /api/products) belum diimplementasikan! Buka src/app/api/products/route.ts untuk melengkapinya.",
+        message:
+          "TODO 6 (POST /api/products) belum diimplementasikan! Buka src/app/api/products/route.ts untuk melengkapinya.",
+        receivedPayload: rawBody,
       },
       { status: 501 } // 501 Not Implemented
     );
