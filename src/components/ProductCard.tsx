@@ -34,7 +34,11 @@ export function ProductCard({
   // Hint: Gunakan objek JavaScript Intl.NumberFormat dengan locale bahasa Indonesia ('id-ID'),
   // konfigurasi style currency 'IDR', dan tanpa angka pecahan desimal (maximumFractionDigits: 0).
   // --------------------------------------------------------------------------
-  const formattedPrice = `${product.price}`;
+  const formattedPrice = new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0, 
+  }).format(product.price);
 
   // --------------------------------------------------------------------------
   // 🎯 TODO 1.2 [DESAIN]: Badge Stok
@@ -44,10 +48,16 @@ export function ProductCard({
   // Hint: Gunakan evaluasi kondisi product.stock > 0 untuk menentukan class Tailwind warna badge
   // (misal: hijau saat tersedia, merah saat habis) serta teks labelnya ("Tersedia" atau "Habis").
   // --------------------------------------------------------------------------
-  const stockBadgeClass = "bg-zinc-100 text-zinc-600";
-  const stockBadgeText = "Status Stok";
+  const isAvilable = product.stock > 0;
+  const stockBadgeClass = isAvilable
+    ? "bg-green-100 text-green-700"
+    : "bg-red-200 text-red-700";
 
-  const handleStock = async (delta: number) => {
+  const stockBadgeText = isAvilable 
+    ? "Tersedia"
+    : "Habis";
+
+    const handleStock = async (delta: number) => {
     if (product.stock + delta < 0) return;
     setIsUpdating(true);
     try {
@@ -63,7 +73,7 @@ export function ProductCard({
      * Tambahkan efek hover pada kartu menggunakan Tailwind: hover:shadow-lg dan transition.
      * Hint: Manfaatkan class Tailwind untuk transisi halus dan elevasi bayangan saat kursor diarahkan ke elemen kartu.
      * ------------------------------------------------------------------------ */
-    <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4">
+    <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4 transition hover:shadow-lg">
       <div>
         {/* Header Kartu: ID Produk & Badge Status */}
         <div className="flex items-center justify-between text-xs">
@@ -105,10 +115,10 @@ export function ProductCard({
            * ------------------------------------------------------------------ */}
           <button
             type="button"
-            disabled={isUpdating}
+            disabled={isUpdating || product.stock <= 0}
             onClick={() => handleStock(-1)}
             title="Kurangi stok 1 (PATCH)"
-            className="flex h-6 w-6 items-center justify-center rounded border border-zinc-200 text-xs font-bold text-zinc-700 transition hover:bg-zinc-100"
+            className="flex h-6 w-6 items-center justify-center rounded border border-zinc-200 text-xs font-bold text-zinc-700 transition hover:bg-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed"
           >
             -
           </button>
