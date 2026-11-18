@@ -30,13 +30,13 @@ export function DeleteConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs">
-      <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-        <h3 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl border border-zinc-200">
+        <h3 className="text-sm font-bold text-zinc-900">
           Hapus Produk?
         </h3>
-        <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
+        <p className="mt-2 text-xs text-zinc-500">
           Apakah kamu yakin ingin menghapus{" "}
-          <strong className="text-zinc-800 dark:text-zinc-200">
+          <strong className="text-zinc-800">
             &quot;{product.name}&quot;
           </strong>
           ? Tindakan ini tidak dapat dibatalkan.
@@ -47,7 +47,7 @@ export function DeleteConfirmModal({
             type="button"
             onClick={onClose}
             disabled={isDeleting}
-            className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100"
           >
             Batal
           </button>

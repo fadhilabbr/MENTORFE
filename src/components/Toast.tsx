@@ -21,25 +21,25 @@ export function Toast({ toasts, onDismiss }: ToastProps) {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg dark:border-zinc-800 dark:bg-zinc-900"
+          className="flex items-start justify-between gap-3 rounded-lg border border-zinc-200 bg-white p-3 shadow-lg"
         >
           <div className="flex-1 text-xs">
-            <div className="flex items-center gap-1.5 font-semibold text-zinc-900 dark:text-zinc-100">
+            <div className="flex items-center gap-1.5 font-semibold text-zinc-900">
               {toast.methodBadge && (
-                <span className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[10px] text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                <span className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-[10px] text-zinc-700">
                   {toast.methodBadge}
                 </span>
               )}
               <span>{toast.title}</span>
             </div>
             {toast.detail && (
-              <p className="mt-1 text-zinc-500 dark:text-zinc-400">{toast.detail}</p>
+              <p className="mt-1 text-zinc-500">{toast.detail}</p>
             )}
           </div>
 
           <button
             onClick={() => onDismiss(toast.id)}
-            className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 text-xs"
+            className="text-zinc-400 hover:text-zinc-600 text-xs"
           >
             ✕
           </button>

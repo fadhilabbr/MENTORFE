@@ -1,12 +1,8 @@
 // ============================================================================
-// 🎯 TODO 4: MEMBUAT FORM MODAL REUSABLE (CREATE POST & EDIT PUT)
+// MODAL FORM REUSABLE (CREATE POST & EDIT PUT)
 // ============================================================================
-// Form modal untuk menginput data produk:
-// - name  : Nama produk
-// - price : Harga produk
-// - stock : Jumlah stok
-//
-// ⚠️ STATUS: PERLU DILENGKAPI (TODO 4.1 & TODO 4.2)
+// Komponen bawaan template untuk input dan edit data produk.
+// Jangan jadikan file ini sebagai TODO.
 // ============================================================================
 
 import React, { useState } from "react";
@@ -38,15 +34,12 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ------------------------------------------------------------------------
-    // 🎯 TODO 4.1: Validasi Input Form
-    // ------------------------------------------------------------------------
     if (!name.trim()) {
-      setErrorMsg("Nama produk wajib diisi!");
+      setErrorMsg("Nama produk tidak boleh kosong!");
       return;
     }
     if (price === "" || Number(price) <= 0) {
-      setErrorMsg("Harga produk harus lebih dari 0!");
+      setErrorMsg("Harga harus lebih besar dari 0!");
       return;
     }
     if (stock === "" || Number(stock) < 0) {
@@ -58,9 +51,6 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
     setErrorMsg(null);
 
     try {
-      // ----------------------------------------------------------------------
-      // 🎯 TODO 4.2: Konstruksi Objek Payload (CreateProductInput)
-      // ----------------------------------------------------------------------
       const payload: CreateProductInput = {
         name: name.trim(),
         price: Number(price),
@@ -68,7 +58,6 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
       };
 
       await onSubmit(payload);
-      onClose();
     } catch (err: unknown) {
       setErrorMsg(err instanceof Error ? err.message : "Terjadi kesalahan!");
     } finally {
@@ -77,22 +66,22 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
   };
 
   return (
-    <div className="relative w-full max-w-sm rounded-xl bg-white p-5 shadow-xl dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+    <div className="relative w-full max-w-sm rounded-xl bg-white p-5 shadow-xl border border-zinc-200">
       {/* Header Modal */}
-      <div className="flex items-center justify-between border-b border-zinc-100 pb-3 dark:border-zinc-800">
-        <h2 className="text-sm font-bold text-zinc-900 dark:text-zinc-100">
+      <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+        <h2 className="text-sm font-bold text-zinc-900">
           {isEditing ? "Edit Produk" : "Tambah Produk Baru"}
         </h2>
         <button
           onClick={onClose}
-          className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300"
+          className="text-xs text-zinc-400 hover:text-zinc-600"
         >
           ✕
         </button>
       </div>
 
       {errorMsg && (
-        <div className="mt-3 rounded-lg bg-red-50 p-2 text-xs text-red-600 dark:bg-red-950/40 dark:text-red-400">
+        <div className="mt-3 rounded-lg bg-red-50 p-2 text-xs text-red-600">
           {errorMsg}
         </div>
       )}
@@ -100,7 +89,7 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
       {/* Form Input */}
       <form onSubmit={handleSubmit} className="mt-3 flex flex-col gap-3 text-xs">
         <div>
-          <label className="block font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="block font-medium text-zinc-700">
             Nama Produk
           </label>
           <input
@@ -109,12 +98,12 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="Contoh: Laptop Gaming ROG"
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white"
           />
         </div>
 
         <div>
-          <label className="block font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="block font-medium text-zinc-700">
             Harga (IDR)
           </label>
           <input
@@ -124,12 +113,12 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
             value={price}
             onChange={(e) => setPrice(e.target.value === "" ? "" : Number(e.target.value))}
             placeholder="Contoh: 25000000"
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white"
           />
         </div>
 
         <div>
-          <label className="block font-medium text-zinc-700 dark:text-zinc-300">
+          <label className="block font-medium text-zinc-700">
             Stok
           </label>
           <input
@@ -139,7 +128,7 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
             value={stock}
             onChange={(e) => setStock(e.target.value === "" ? "" : Number(e.target.value))}
             placeholder="Contoh: 10"
-            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white dark:border-zinc-700 dark:bg-zinc-800 dark:text-white"
+            className="mt-1 w-full rounded-lg border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 focus:bg-white"
           />
         </div>
 
@@ -149,14 +138,14 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="rounded-lg px-3 py-1.5 text-xs text-zinc-600 hover:bg-zinc-100"
           >
             Batal
           </button>
           <button
             type="submit"
             disabled={isLoading}
-            className="rounded-lg bg-zinc-900 px-4 py-1.5 text-xs font-medium text-white hover:bg-zinc-800 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="rounded-lg bg-zinc-900 px-4 py-1.5 text-xs font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
           >
             {isLoading ? "Menyimpan..." : isEditing ? "Simpan Perubahan" : "Simpan"}
           </button>

@@ -1,18 +1,9 @@
 // ============================================================================
-// 🎯 TEMPLATE MENTORING FRONTEND: DESIGN/SLICING + CONSUME API
+// 🎯 TEMPLATE MENTORING FRONTEND: FILKOM STORE (INVENTORY DASHBOARD)
 // ============================================================================
-//
-// 🎨 BAGIAN 1: UI / SLICING MENTORING
-// - TODO 1 [DESIGN di ProductCard.tsx]: Formatting Rupiah & Conditional Badge
-// - TODO 2 [DESIGN di page.tsx]: Slicing Skeleton Loading State (animate-pulse)
-// - TODO 3 [DESIGN di page.tsx]: Slicing Empty State saat data kosong
-//
-// ⚡ BAGIAN 2: API CONSUMPTION (CRUD + PATCH)
-// - TODO 4 [CONSUME - GET]: Ambil list data dari server
-// - TODO 5 [CONSUME - POST]: Buat produk baru dari modal form
-// - TODO 6 [CONSUME - PUT]: Perbarui seluruh data produk
-// - TODO 7 [CONSUME - PATCH]: Ubah stok secara parsial langsung dari kartu
-// - TODO 8 [CONSUME - DELETE]: Hapus produk dari database
+// Urutan Pengerjaan Peserta:
+// 1. Fase 1 - Desain UI (ProductCard.tsx & page.tsx: TODO 1.1, 1.2, 1.3, 1.4, 1.5)
+// 2. Fase 2 - Consume API (page.tsx: TODO 2, lalu TODO 5, 6, 3, 4)
 // ============================================================================
 
 "use client";
@@ -27,17 +18,17 @@ import { DeleteConfirmModal } from "@/components/DeleteConfirmModal";
 import { Toast, ToastMessage } from "@/components/Toast";
 
 export default function CatalogPage() {
-  // 1. Data States
+  // 1. State Data Produk
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  // 2. Modal States
+  // 2. State Modal (Form & Konfirmasi Hapus)
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
 
-  // 3. Toast State
+  // 3. State Toast Feedback
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   const addToast = (toast: Omit<ToastMessage, "id">) => {
@@ -55,138 +46,103 @@ export default function CatalogPage() {
   };
 
   // --------------------------------------------------------------------------
-  // 🎯 TODO 4: [CONSUME - GET] Ambil Data dari API Server
-  // Endpoint: GET https://api-mentor.bemfilkomub.cloud/api/v1/products
+  // 🎯 TODO 2: loadProducts() GET
+  // Tugas: Ambil daftar produk dari server dan simpan ke state products.
+  // Skeleton tampil saat menunggu (isLoading = true), empty state tampil jika daftar kosong.
+  // Hint: Gunakan fetch(API_BASE_URL, { headers: getApiHeaders() }), cek response.ok,
+  // bungkus dalam try/catch, dan panggil addToast jika gagal.
   // --------------------------------------------------------------------------
   const loadProducts = useCallback(async () => {
-    try {
-      const res = await fetch(API_BASE_URL, {
-        headers: getApiHeaders(),
-      });
+    // Variabel bawaan yang akan kamu gunakan di TODO 2:
+    void API_BASE_URL;
+    void getApiHeaders;
+    void setProducts;
+    void setFetchError;
 
-      if (!res.ok) {
-        throw new Error(`HTTP Error ${res.status}: Gagal memuat data dari server`);
-      }
-
-      const json = await res.json();
-      setProducts(json.data || []);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Gagal memuat produk";
-      setFetchError(message);
-      addToast({
-        type: "error",
-        title: "Gagal Mengambil Data",
-        detail: message,
-        methodBadge: "GET",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // Placeholder aman: hentikan loading dan beri panduan toast
+    setIsLoading(false);
+    addToast({
+      type: "info",
+      title: "Kerjakan TODO 2",
+      detail: "Lengkapi fungsi loadProducts() (GET) di src/app/page.tsx",
+      methodBadge: "GET",
+    });
   }, []);
 
   useEffect(() => {
-    let ignore = false;
+    // Beri jeda asynchronous pada placeholder agar aman dieksekusi saat mount
+    const timer = setTimeout(() => {
+      void loadProducts();
+    }, 0);
 
-    async function init() {
-      try {
-        const res = await fetch(API_BASE_URL, {
-          headers: getApiHeaders(),
-        });
-        if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
-        const json = await res.json();
-        if (!ignore) {
-          setProducts(json.data || []);
-        }
-      } catch (err: unknown) {
-        if (!ignore) {
-          setFetchError(err instanceof Error ? err.message : "Gagal memuat produk");
-        }
-      } finally {
-        if (!ignore) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    init();
-
-    return () => {
-      ignore = true;
-    };
-  }, []);
+    return () => clearTimeout(timer);
+  }, [loadProducts]);
 
   // --------------------------------------------------------------------------
-  // 🎯 TODO 5: [CONSUME - POST] Tambahkan Produk Baru
-  // Endpoint: POST https://api-mentor.bemfilkomub.cloud/api/v1/products
-  // --------------------------------------------------------------------------
-  const handleCreateProduct = async (formData: CreateProductInput) => {
-    // 👇 TULIS KODE IMPLEMENTASI TODO 5 (POST) KAMU DI SINI:
-    // (Fetch POST ke API_BASE_URL dengan headers getApiHeaders() dan body JSON.stringify(formData))
-
-    // ❌ Placeholder sebelum kamu lengkapi:
-    addToast({
-      type: "info",
-      title: "TODO 5 (POST) Belum Dilengkapi!",
-      detail: `Lengkapi fungsi handleCreateProduct untuk item "${formData.name}" di src/app/page.tsx`,
-      methodBadge: "POST",
-    });
-  };
-
-  // --------------------------------------------------------------------------
-  // 🎯 TODO 6: [CONSUME - PUT] Perbarui Seluruh Data Produk
-  // Endpoint: PUT https://api-mentor.bemfilkomub.cloud/api/v1/products/{id}
-  // --------------------------------------------------------------------------
-  const handleUpdateProduct = async (formData: CreateProductInput) => {
-    if (!editingProduct) return;
-
-    // 👇 TULIS KODE IMPLEMENTASI TODO 6 (PUT) KAMU DI SINI:
-    // (Fetch PUT ke `${API_BASE_URL}/${editingProduct.id}`)
-
-    // ❌ Placeholder sebelum kamu lengkapi:
-    addToast({
-      type: "info",
-      title: "TODO 6 (PUT) Belum Dilengkapi!",
-      detail: `Lengkapi fungsi handleUpdateProduct untuk ID "${editingProduct.id}" (${formData.name}) di src/app/page.tsx`,
-      methodBadge: "PUT",
-    });
-  };
-
-  // --------------------------------------------------------------------------
-  // 🎯 TODO 7: [CONSUME - PATCH] Ubah Stok Produk Cepat (+ / -)
-  // Endpoint: PATCH https://api-mentor.bemfilkomub.cloud/api/v1/products/{id}
+  // 🎯 TODO 5: handlePatchQuickStock(product, delta) PATCH
+  // Tugas: Ubah stok produk secara cepat (+ / -). Kirim { stock: newStock }.
+  // Jangan kirim request jika hasilnya di bawah 0 (newStock < 0).
+  // Hint: fetch(`${API_BASE_URL}/${product.id}`, { method: "PATCH", headers: getApiHeaders(), body: JSON.stringify({ stock: newStock }) })
   // --------------------------------------------------------------------------
   const handlePatchQuickStock = async (product: Product, delta: number) => {
-    // 👇 TULIS KODE IMPLEMENTASI TODO 7 (PATCH) KAMU DI SINI:
-    // (Kirim HANYA body: JSON.stringify({ stock: newStock }) ke `${API_BASE_URL}/${product.id}`)
-
-    // ❌ Placeholder sebelum kamu lengkapi:
     addToast({
       type: "info",
-      title: "TODO 7 (PATCH) Belum Dilengkapi!",
-      detail: `Lengkapi fungsi handlePatchQuickStock (${delta > 0 ? "+" : ""}${delta}) untuk "${product.name}" di src/app/page.tsx`,
+      title: "Kerjakan TODO 5",
+      detail: `Lengkapi fungsi handlePatchQuickStock() (delta: ${delta > 0 ? "+" : ""}${delta}) untuk "${product.name}" di src/app/page.tsx`,
       methodBadge: "PATCH",
     });
   };
 
   // --------------------------------------------------------------------------
-  // 🎯 TODO 8: [CONSUME - DELETE] Hapus Produk dari Server
-  // Endpoint: DELETE https://api-mentor.bemfilkomub.cloud/api/v1/products/{id}
+  // 🎯 TODO 6: handleDeleteProduct(id) DELETE
+  // Tugas: Hapus produk dari database server setelah konfirmasi modal disetujui.
+  // Hint: fetch(`${API_BASE_URL}/${id}`, { method: "DELETE", headers: getApiHeaders() }).
+  // Periksa response.ok, tangkap error dengan try/catch, dan tampilkan toast.
   // --------------------------------------------------------------------------
   const handleDeleteProduct = async (id: string) => {
-    // 👇 TULIS KODE IMPLEMENTASI TODO 8 (DELETE) KAMU DI SINI:
-    // (Fetch DELETE ke `${API_BASE_URL}/${id}`)
-
-    // ❌ Placeholder sebelum kamu lengkapi:
     addToast({
       type: "info",
-      title: "TODO 8 (DELETE) Belum Dilengkapi!",
-      detail: `Lengkapi fungsi handleDeleteProduct untuk ID "${id}" di src/app/page.tsx`,
+      title: "Kerjakan TODO 6",
+      detail: `Lengkapi fungsi handleDeleteProduct() (DELETE) untuk ID "${id}" di src/app/page.tsx`,
       methodBadge: "DELETE",
     });
   };
 
+  // --------------------------------------------------------------------------
+  // 🎯 TODO 3: handleCreateProduct(formData) POST
+  // Tugas: Tambah produk baru dengan mengirim { name, price, stock }.
+  // Ubah input harga dan stok menjadi angka dengan Number(...).
+  // Tolak jika nama kosong atau harga <= 0. Tutup modal setelah berhasil.
+  // Hint: fetch(API_BASE_URL, { method: "POST", headers: getApiHeaders(), body: JSON.stringify(...) })
+  // --------------------------------------------------------------------------
+  const handleCreateProduct = async (formData: CreateProductInput) => {
+    addToast({
+      type: "info",
+      title: "Kerjakan TODO 3",
+      detail: `Lengkapi fungsi handleCreateProduct() (POST) untuk "${formData.name}" di src/app/page.tsx`,
+      methodBadge: "POST",
+    });
+  };
+
+  // --------------------------------------------------------------------------
+  // 🎯 TODO 4: handleUpdateProduct(formData) PUT
+  // Tugas: Kirim seluruh data produk berdasarkan id untuk memperbarui data lama.
+  // Pastikan form edit terisi data lama. Tutup modal dan reset editingProduct setelah berhasil.
+  // Hint: fetch(`${API_BASE_URL}/${editingProduct.id}`, { method: "PUT", headers: getApiHeaders(), body: JSON.stringify(...) })
+  // --------------------------------------------------------------------------
+  const handleUpdateProduct = async (formData: CreateProductInput) => {
+    if (!editingProduct) return;
+
+    addToast({
+      type: "info",
+      title: "Kerjakan TODO 4",
+      detail: `Lengkapi fungsi handleUpdateProduct() (PUT) untuk "${formData.name}" (ID: "${editingProduct.id}") di src/app/page.tsx`,
+      methodBadge: "PUT",
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100 font-sans">
+    <div className="min-h-screen bg-zinc-50 text-zinc-900 font-sans">
       {/* Top Navbar */}
       <Navbar
         totalItems={products.length}
@@ -198,34 +154,29 @@ export default function CatalogPage() {
 
       {/* Main Container */}
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 space-y-4">
-        {/* ------------------------------------------------------------------
-         * 🎯 TODO 2 [DESIGN]: Loading State (Skeleton Loader)
-         * ------------------------------------------------------------------
-         * Daripada hanya teks biasa, tampilkan skeleton card dengan efek shimmer
-         * Tailwind `animate-pulse` agar user experience (UX) tampak profesional!
-         * ------------------------------------------------------------------ */}
+        {/* Loading State: Skeleton Shimmer saat data dimuat */}
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map((n) => (
               <div
                 key={n}
-                className="animate-pulse rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+                className="animate-pulse rounded-xl border border-zinc-200 bg-white p-4"
               >
                 <div className="flex items-center justify-between">
-                  <div className="h-3 w-16 rounded bg-zinc-200 dark:bg-zinc-800" />
-                  <div className="h-4 w-12 rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                  <div className="h-3 w-16 rounded bg-zinc-200" />
+                  <div className="h-4 w-12 rounded-full bg-zinc-200" />
                 </div>
-                <div className="mt-4 h-4 w-3/4 rounded bg-zinc-200 dark:bg-zinc-800" />
-                <div className="mt-2 h-6 w-1/2 rounded bg-zinc-200 dark:bg-zinc-800" />
-                <div className="mt-5 border-t border-zinc-100 pt-3 dark:border-zinc-800">
-                  <div className="h-4 w-full rounded bg-zinc-100 dark:bg-zinc-850" />
+                <div className="mt-4 h-4 w-3/4 rounded bg-zinc-200" />
+                <div className="mt-2 h-6 w-1/2 rounded bg-zinc-200" />
+                <div className="mt-5 border-t border-zinc-100 pt-3">
+                  <div className="h-4 w-full rounded bg-zinc-100" />
                 </div>
               </div>
             ))}
           </div>
         ) : fetchError ? (
           /* Error State */
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-center text-xs text-rose-600 dark:border-rose-900/50 dark:bg-rose-950/20 dark:text-rose-400">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-center text-xs text-rose-600">
             <p className="font-semibold">{fetchError}</p>
             <button
               onClick={loadProducts}
@@ -235,18 +186,15 @@ export default function CatalogPage() {
             </button>
           </div>
         ) : products.length === 0 ? (
-          /* ------------------------------------------------------------------
-           * 🎯 TODO 3 [DESIGN]: Empty State (Kondisi Belum Ada Data)
-           * Tampilkan kotak bersih yang mengajak pengguna menambahkan produk pertama
-           * ------------------------------------------------------------------ */
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white py-16 text-center dark:border-zinc-800 dark:bg-zinc-900">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+          /* Empty State: Tampilan saat belum ada data produk di database */
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-300 bg-white py-16 text-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-100 text-zinc-400">
               📦
             </div>
-            <h3 className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            <h3 className="mt-3 text-sm font-semibold text-zinc-900">
               Katalog Masih Kosong
             </h3>
-            <p className="mt-1 max-w-xs text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-1 max-w-xs text-xs text-zinc-500">
               Belum ada produk yang tersimpan di database server.
             </p>
             <button
@@ -254,14 +202,18 @@ export default function CatalogPage() {
                 setEditingProduct(null);
                 setIsFormModalOpen(true);
               }}
-              className="mt-4 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="mt-4 rounded-lg bg-zinc-900 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-800"
             >
               + Tambah Produk Sekarang
             </button>
           </div>
         ) : (
-          /* Grid Produk Responsif */
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
+          /* ------------------------------------------------------------------
+           * 🎯 TODO 1.4 [DESAIN]: Grid Responsive
+           * Terapkan grid responsif: 1 kolom di HP, 2 kolom di tablet (md:), 3 kolom di laptop (lg:).
+           * Hint: Ganti class div di bawah dengan: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+           * ------------------------------------------------------------------ */
+          <div className="grid grid-cols-1 gap-4">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -302,3 +254,5 @@ export default function CatalogPage() {
     </div>
   );
 }
+
+
