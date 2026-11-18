@@ -8,7 +8,7 @@
 // - TODO 1.5: Efek hover kartu dengan transition
 // ============================================================================
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Product } from "@/types/product";
 
 interface ProductCardProps {
@@ -31,7 +31,8 @@ export function ProductCard({
   // --------------------------------------------------------------------------
   // Format angka mentah menjadi Rupiah memakai Intl.NumberFormat (id-ID, IDR).
   // Contoh hasil: 25000000 tampil "Rp 25.000.000", 0 tampil "Rp 0".
-  // Hint: Gunakan new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(...)
+  // Hint: Gunakan objek JavaScript Intl.NumberFormat dengan locale bahasa Indonesia ('id-ID'),
+  // konfigurasi style currency 'IDR', dan tanpa angka pecahan desimal (maximumFractionDigits: 0).
   // --------------------------------------------------------------------------
   const formattedPrice = `${product.price}`;
 
@@ -40,8 +41,8 @@ export function ProductCard({
   // --------------------------------------------------------------------------
   // Badge hijau jika stock > 0, merah jika 0.
   // Badge juga memuat teks ("Tersedia" / "Habis"), bukan hanya warna.
-  // Hint: Gunakan ternary operator untuk menentukan class Tailwind (misal: bg-emerald-100 text-emerald-700 vs bg-rose-100 text-rose-700)
-  // dan tentukan teks badge ("Tersedia" jika stock > 0, "Habis" jika stock === 0).
+  // Hint: Gunakan evaluasi kondisi product.stock > 0 untuk menentukan class Tailwind warna badge
+  // (misal: hijau saat tersedia, merah saat habis) serta teks labelnya ("Tersedia" atau "Habis").
   // --------------------------------------------------------------------------
   const stockBadgeClass = "bg-zinc-100 text-zinc-600";
   const stockBadgeText = "Status Stok";
@@ -60,7 +61,7 @@ export function ProductCard({
     /* ------------------------------------------------------------------------
      * 🎯 TODO 1.5 [DESAIN]: Efek Hover Kartu
      * Tambahkan efek hover pada kartu menggunakan Tailwind: hover:shadow-lg dan transition.
-     * Hint: Tambahkan class "transition hover:shadow-lg" pada tag div kartu di bawah ini.
+     * Hint: Manfaatkan class Tailwind untuk transisi halus dan elevasi bayangan saat kursor diarahkan ke elemen kartu.
      * ------------------------------------------------------------------------ */
     <div className="flex flex-col justify-between rounded-xl border border-zinc-200 bg-white p-4">
       <div>
@@ -99,6 +100,8 @@ export function ProductCard({
            * 🎯 TODO 1.3 [DESAIN]: Tombol [-] Nonaktif Saat Stok 0
            * Nonaktifkan tombol saat stok 0: gunakan atribut disabled saat product.stock <= 0
            * (atau saat isUpdating), ditambah styling disabled:opacity-30 disabled:cursor-not-allowed.
+           * Hint: Berikan kondisi pada atribut disabled (saat stok habis atau sedang updating),
+           * lalu atur class opacity dan cursor untuk varian disabled: milik Tailwind.
            * ------------------------------------------------------------------ */}
           <button
             type="button"
@@ -142,5 +145,3 @@ export function ProductCard({
     </div>
   );
 }
-
-

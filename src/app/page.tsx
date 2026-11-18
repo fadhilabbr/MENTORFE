@@ -8,7 +8,7 @@
 
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CreateProductInput, Product } from "@/types/product";
 import { API_BASE_URL, getApiHeaders } from "@/config/api";
 import { Navbar } from "@/components/Navbar";
@@ -31,7 +31,7 @@ export default function CatalogPage() {
   // 3. State Toast Feedback
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const addToast = (toast: Omit<ToastMessage, "id">) => {
+  const addToast = useCallback((toast: Omit<ToastMessage, "id">) => {
     const id = `toast-${Date.now()}-${Math.random()}`;
     const newToast: ToastMessage = { ...toast, id };
     setToasts((prev) => [...prev, newToast]);
@@ -39,7 +39,7 @@ export default function CatalogPage() {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4000);
-  };
+  }, []);
 
   const removeToast = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -49,8 +49,8 @@ export default function CatalogPage() {
   // 🎯 TODO 2: loadProducts() GET
   // Tugas: Ambil daftar produk dari server dan simpan ke state products.
   // Skeleton tampil saat menunggu (isLoading = true), empty state tampil jika daftar kosong.
-  // Hint: Gunakan fetch(API_BASE_URL, { headers: getApiHeaders() }), cek response.ok,
-  // bungkus dalam try/catch, dan panggil addToast jika gagal.
+  // Hint: Gunakan fetch(API_BASE_URL, { headers: getApiHeaders() }), periksa response.ok,
+  // tangani error dalam try/catch, dan tampilkan notifikasi via addToast jika gagal.
   // --------------------------------------------------------------------------
   const loadProducts = useCallback(async () => {
     // Variabel bawaan yang akan kamu gunakan di TODO 2:
@@ -67,7 +67,7 @@ export default function CatalogPage() {
       detail: "Lengkapi fungsi loadProducts() (GET) di src/app/page.tsx",
       methodBadge: "GET",
     });
-  }, []);
+  }, [addToast]);
 
   useEffect(() => {
     // Beri jeda asynchronous pada placeholder agar aman dieksekusi saat mount
@@ -82,6 +82,7 @@ export default function CatalogPage() {
   // 🎯 TODO 5: handlePatchQuickStock(product, delta) PATCH
   // Tugas: Ubah stok produk secara cepat (+ / -). Kirim { stock: newStock }.
   // Jangan kirim request jika hasilnya di bawah 0 (newStock < 0).
+  // Setelah berhasil, perbarui tampilan antarmuka (muat ulang lewat loadProducts() atau ubah state products).
   // Hint: fetch(`${API_BASE_URL}/${product.id}`, { method: "PATCH", headers: getApiHeaders(), body: JSON.stringify({ stock: newStock }) })
   // --------------------------------------------------------------------------
   const handlePatchQuickStock = async (product: Product, delta: number) => {
@@ -96,6 +97,7 @@ export default function CatalogPage() {
   // --------------------------------------------------------------------------
   // 🎯 TODO 6: handleDeleteProduct(id) DELETE
   // Tugas: Hapus produk dari database server setelah konfirmasi modal disetujui.
+  // Setelah berhasil, tutup modal dengan setDeletingProduct(null) dan perbarui tampilan (muat ulang lewat loadProducts() atau ubah state products).
   // Hint: fetch(`${API_BASE_URL}/${id}`, { method: "DELETE", headers: getApiHeaders() }).
   // Periksa response.ok, tangkap error dengan try/catch, dan tampilkan toast.
   // --------------------------------------------------------------------------
@@ -112,7 +114,8 @@ export default function CatalogPage() {
   // 🎯 TODO 3: handleCreateProduct(formData) POST
   // Tugas: Tambah produk baru dengan mengirim { name, price, stock }.
   // Ubah input harga dan stok menjadi angka dengan Number(...).
-  // Tolak jika nama kosong atau harga <= 0. Tutup modal setelah berhasil.
+  // Tolak jika nama kosong atau harga <= 0.
+  // Setelah berhasil, tutup modal (setIsFormModalOpen(false)) dan perbarui tampilan (muat ulang lewat loadProducts() atau ubah state products).
   // Hint: fetch(API_BASE_URL, { method: "POST", headers: getApiHeaders(), body: JSON.stringify(...) })
   // --------------------------------------------------------------------------
   const handleCreateProduct = async (formData: CreateProductInput) => {
@@ -127,7 +130,8 @@ export default function CatalogPage() {
   // --------------------------------------------------------------------------
   // 🎯 TODO 4: handleUpdateProduct(formData) PUT
   // Tugas: Kirim seluruh data produk berdasarkan id untuk memperbarui data lama.
-  // Pastikan form edit terisi data lama. Tutup modal dan reset editingProduct setelah berhasil.
+  // Pastikan form edit terisi data lama.
+  // Setelah berhasil, tutup modal (setIsFormModalOpen(false)), reset editingProduct (setEditingProduct(null)), dan perbarui tampilan (muat ulang lewat loadProducts() atau ubah state products).
   // Hint: fetch(`${API_BASE_URL}/${editingProduct.id}`, { method: "PUT", headers: getApiHeaders(), body: JSON.stringify(...) })
   // --------------------------------------------------------------------------
   const handleUpdateProduct = async (formData: CreateProductInput) => {
@@ -211,7 +215,7 @@ export default function CatalogPage() {
           /* ------------------------------------------------------------------
            * 🎯 TODO 1.4 [DESAIN]: Grid Responsive
            * Terapkan grid responsif: 1 kolom di HP, 2 kolom di tablet (md:), 3 kolom di laptop (lg:).
-           * Hint: Ganti class div di bawah dengan: "grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+           * Hint: Gunakan class Tailwind grid, grid-cols-, serta breakpoint md: (tablet) dan lg: (laptop).
            * ------------------------------------------------------------------ */
           <div className="grid grid-cols-1 gap-4">
             {products.map((product) => (
@@ -254,5 +258,3 @@ export default function CatalogPage() {
     </div>
   );
 }
-
-

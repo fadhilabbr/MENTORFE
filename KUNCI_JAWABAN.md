@@ -105,6 +105,16 @@ Class `hover:shadow-lg` menaikkan elevasi bayangan kartu saat disentuh kursor mo
 ### 📌 TODO 2: `loadProducts()` (GET)
 **File**: `src/app/page.tsx`
 ```typescript
+const addToast = useCallback((toast: Omit<ToastMessage, "id">) => {
+  const id = `toast-${Date.now()}-${Math.random()}`;
+  const newToast: ToastMessage = { ...toast, id };
+  setToasts((prev) => [...prev, newToast]);
+
+  setTimeout(() => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, 4000);
+}, []);
+
 const loadProducts = useCallback(async () => {
   setIsLoading(true);
   setFetchError(null);
@@ -131,7 +141,7 @@ const loadProducts = useCallback(async () => {
   } finally {
     setIsLoading(false);
   }
-}, []);
+}, [addToast]);
 
 useEffect(() => {
   const timer = setTimeout(() => {
@@ -206,6 +216,7 @@ const handleDeleteProduct = async (id: string) => {
     }
 
     setProducts((prev) => prev.filter((item) => item.id !== id));
+    setDeletingProduct(null);
 
     addToast({
       type: "success",
@@ -225,7 +236,7 @@ const handleDeleteProduct = async (id: string) => {
 };
 ```
 **Penjelasan**:
-Method DELETE dijalankan setelah pengguna menyetujui konfirmasi pada modal untuk mencegah kehilangan data secara tidak sengaja. Setelah server membalas dengan status sukses, array produk difilter untuk membuang item dengan ID yang bersangkutan.
+Method DELETE dijalankan setelah pengguna menyetujui konfirmasi pada modal untuk mencegah kehilangan data secara tidak sengaja. Setelah server membalas dengan status sukses, array produk difilter untuk membuang item dan modal ditutup dengan `setDeletingProduct(null)`.
 
 ---
 

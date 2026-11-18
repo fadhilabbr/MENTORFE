@@ -5,7 +5,7 @@
 // Jangan jadikan file ini sebagai TODO.
 // ============================================================================
 
-import React, { useState } from "react";
+import { useState, FormEvent } from "react";
 import { CreateProductInput, Product } from "@/types/product";
 
 interface ProductFormModalProps {
@@ -31,7 +31,7 @@ function ProductFormInner({ onClose, onSubmit, productToEdit }: FormInnerProps) 
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (!name.trim()) {
