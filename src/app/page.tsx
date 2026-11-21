@@ -53,20 +53,34 @@ export default function CatalogPage() {
   // tangani error dalam try/catch, dan tampilkan notifikasi via addToast jika gagal.
   // --------------------------------------------------------------------------
   const loadProducts = useCallback(async () => {
-    // Variabel bawaan yang akan kamu gunakan di TODO 2:
-    void API_BASE_URL;
-    void getApiHeaders;
-    void setProducts;
-    void setFetchError;
+  setIsLoading(true);
+  setFetchError(null);
 
-    // Placeholder aman: hentikan loading dan beri panduan toast
-    setIsLoading(false);
+  try{
+    const res = await fetch(API_BASE_URL, {
+      headers: getApiHeaders(),
+    });
+
+    if(!res.ok){
+      throw new Error(`error, $(res.status)`);
+    }
+
+    const json = await res.json();
+
+    setProducts(json.data || []);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Gagal Memuat";
+    setFetchError(message);
+
     addToast({
-      type: "info",
-      title: "Kerjakan TODO 2",
-      detail: "Lengkapi fungsi loadProducts() (GET) di src/app/page.tsx",
+      type: "error",
+      title: "Gagal Memuat",
+      detail: message,
       methodBadge: "GET",
     });
+  } finally {
+    setIsLoading(false);
+  }
   }, [addToast]);
 
   useEffect(() => {
@@ -86,12 +100,40 @@ export default function CatalogPage() {
   // Hint: fetch(`${API_BASE_URL}/${product.id}`, { method: "PATCH", headers: getApiHeaders(), body: JSON.stringify({ stock: newStock }) })
   // --------------------------------------------------------------------------
   const handlePatchQuickStock = async (product: Product, delta: number) => {
-    addToast({
-      type: "info",
-      title: "Kerjakan TODO 5",
-      detail: `Lengkapi fungsi handlePatchQuickStock() (delta: ${delta > 0 ? "+" : ""}${delta}) untuk "${product.name}" di src/app/page.tsx`,
-      methodBadge: "PATCH",
-    });
+    const newStock = product.stock + delta;
+    if (newStock < 0) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/${product.id}`, {
+        method: "PATCH",
+        headers: getApiHeaders(),
+        body: JSON.stringify({ stock: newStock }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error ${res.status}: Gagal memperbarui stok`);
+      }
+
+      const json = await res.json();
+      setProducts((prev) =>
+        prev.map((item) => (item.id === product.id ? json.data : item))
+      );
+
+      addToast({
+        type: "success",
+        title: "Stok Berhasil Diperbarui",
+        detail: `Stok "${product.name}" sekarang: ${newStock}`,
+        methodBadge: "PATCH",
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Gagal memperbarui stok";
+      addToast({
+        type: "error",
+        title: "Gagal Update Stok",
+        detail: message,
+        methodBadge: "PATCH",
+      });
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -102,12 +144,34 @@ export default function CatalogPage() {
   // Periksa response.ok, tangkap error dengan try/catch, dan tampilkan toast.
   // --------------------------------------------------------------------------
   const handleDeleteProduct = async (id: string) => {
-    addToast({
-      type: "info",
-      title: "Kerjakan TODO 6",
-      detail: `Lengkapi fungsi handleDeleteProduct() (DELETE) untuk ID "${id}" di src/app/page.tsx`,
-      methodBadge: "DELETE",
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/${id}`, {
+        method: "DELETE",
+        headers: getApiHeaders(),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error ${res.status}: Gagal menghapus produk`);
+      }
+
+      setProducts((prev) => prev.filter((item) => item.id !== id));
+      setDeletingProduct(null);
+
+      addToast({
+        type: "success",
+        title: "Produk Berhasil Dihapus",
+        detail: "Data produk telah dihapus dari sistem.",
+        methodBadge: "DELETE",
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Gagal menghapus produk";
+      addToast({
+        type: "error",
+        title: "Gagal Menghapus Produk",
+        detail: message,
+        methodBadge: "DELETE",
+      });
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -119,12 +183,50 @@ export default function CatalogPage() {
   // Hint: fetch(API_BASE_URL, { method: "POST", headers: getApiHeaders(), body: JSON.stringify(...) })
   // --------------------------------------------------------------------------
   const handleCreateProduct = async (formData: CreateProductInput) => {
-    addToast({
-      type: "info",
-      title: "Kerjakan TODO 3",
-      detail: `Lengkapi fungsi handleCreateProduct() (POST) untuk "${formData.name}" di src/app/page.tsx`,
-      methodBadge: "POST",
-    });
+    const name = formData.name ? formData.name.trim() : "";
+    const price = Number(formData.price);
+    const stock = Number(formData.stock);
+
+    if (!name || price <= 0) {
+      addToast({
+        type: "error",
+        title: "Validasi Gagal",
+        detail: "Nama tidak boleh kosong dan harga harus lebih dari 0",
+        methodBadge: "POST",
+      });
+      return;
+    }
+
+    try {
+      const res = await fetch(API_BASE_URL, {
+        method: "POST",
+        headers: getApiHeaders(),
+        body: JSON.stringify({ name, price, stock }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error ${res.status}: Gagal menambah produk`);
+      }
+
+      const json = await res.json();
+      setProducts((prev) => [json.data, ...prev]);
+
+      setIsFormModalOpen(false);
+      addToast({
+        type: "success",
+        title: "Produk Berhasil Ditambahkan",
+        detail: `Produk "${name}" telah disimpan ke katalog.`,
+        methodBadge: "POST",
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Gagal menambah produk";
+      addToast({
+        type: "error",
+        title: "Gagal Menambah Produk",
+        detail: message,
+        methodBadge: "POST",
+      });
+    }
   };
 
   // --------------------------------------------------------------------------
@@ -137,12 +239,44 @@ export default function CatalogPage() {
   const handleUpdateProduct = async (formData: CreateProductInput) => {
     if (!editingProduct) return;
 
-    addToast({
-      type: "info",
-      title: "Kerjakan TODO 4",
-      detail: `Lengkapi fungsi handleUpdateProduct() (PUT) untuk "${formData.name}" (ID: "${editingProduct.id}") di src/app/page.tsx`,
-      methodBadge: "PUT",
-    });
+    const name = formData.name ? formData.name.trim() : "";
+    const price = Number(formData.price);
+    const stock = Number(formData.stock);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/${editingProduct.id}`, {
+        method: "PUT",
+        headers: getApiHeaders(),
+        body: JSON.stringify({ name, price, stock }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP Error ${res.status}: Gagal memperbarui produk`);
+      }
+
+      const json = await res.json();
+      setProducts((prev) =>
+        prev.map((item) => (item.id === editingProduct.id ? json.data : item))
+      );
+
+      setIsFormModalOpen(false);
+      setEditingProduct(null);
+
+      addToast({
+        type: "success",
+        title: "Produk Berhasil Diperbarui",
+        detail: `Perubahan "${name}" berhasil disimpan.`,
+        methodBadge: "PUT",
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Gagal memperbarui produk";
+      addToast({
+        type: "error",
+        title: "Gagal Update Produk",
+        detail: message,
+        methodBadge: "PUT",
+      });
+    }
   };
 
   return (
@@ -217,7 +351,7 @@ export default function CatalogPage() {
            * Terapkan grid responsif: 1 kolom di HP, 2 kolom di tablet (md:), 3 kolom di laptop (lg:).
            * Hint: Gunakan class Tailwind grid, grid-cols-, serta breakpoint md: (tablet) dan lg: (laptop).
            * ------------------------------------------------------------------ */
-          <div className="grid grid-cols-1 gap-4">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 md:grid-cols-2">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
